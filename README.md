@@ -1,4 +1,3 @@
--- Black Liquid Glass GUI System
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -23,7 +22,6 @@ stroke.Color = THEME.Accent
 stroke.Thickness = 2
 stroke.Transparency = 0.3
 
--- Эффект "жидкого" стекла
 local overlay = Instance.new("Frame", MainWindow)
 overlay.Size = UDim2.new(1, 0, 1, 0)
 overlay.BackgroundColor3 = Color3.new(1, 1, 1)
@@ -34,7 +32,6 @@ local container = Instance.new("UIListLayout", MainWindow)
 container.Padding = UDim.new(0, 15)
 container.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
--- Функция создания элемента
 local function createInput(text)
     local box = Instance.new("TextBox", MainWindow)
     box.Size = UDim2.new(0.9, 0, 0, 40)
@@ -44,6 +41,3 @@ local function createInput(text)
     Instance.new("UICorner", box).CornerRadius = UDim.new(0, 10)
     Instance.new("UIStroke", box).Color = THEME.Accent
 end
-
-createInput("Fly Speed")
-createInput("NoClip Toggle")
