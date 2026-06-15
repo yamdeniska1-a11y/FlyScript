@@ -1,6 +1,3 @@
--- LiquidGlass Menu v3 | Fly + NoClip
--- LocalScript → StarterPlayerScripts
-
 local TweenService     = game:GetService("TweenService")
 local Players          = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
@@ -18,7 +15,6 @@ local FlyOn           = false
 local listeningForKey = false
 local flyBodyVel, flyBodyGyro
 
--- ЦВЕТА
 local BG       = Color3.fromRGB(12, 12, 22)
 local CARD     = Color3.fromRGB(25, 25, 42)
 local INPUT    = Color3.fromRGB(16, 16, 30)
@@ -32,14 +28,12 @@ local function C(p, r) local c=Instance.new("UICorner",p) c.CornerRadius=UDim.ne
 local function S(p, col, th) local s=Instance.new("UIStroke",p) s.Color=col or STROKE s.Thickness=th or 1.5 end
 local function tw(o, props, t) TweenService:Create(o,TweenInfo.new(t or .2,Enum.EasingStyle.Quad),props):Play() end
 
--- GUI
 local gui = Instance.new("ScreenGui")
 gui.Name           = "LiquidGlassMenu"
 gui.ResetOnSpawn   = false
 gui.IgnoreGuiInset = true
 gui.Parent         = player:WaitForChild("PlayerGui")
 
--- Окно
 local win = Instance.new("Frame")
 win.Name             = "Win"
 win.Size             = UDim2.new(0, 420, 0, 300)
@@ -50,7 +44,6 @@ win.Parent           = gui
 C(win, 16)
 S(win, STROKE, 2)
 
--- Кнопка закрытия
 local xBtn = Instance.new("TextButton")
 xBtn.Size             = UDim2.new(0, 26, 0, 26)
 xBtn.Position         = UDim2.new(1, -32, 0, 6)
@@ -65,7 +58,6 @@ xBtn.Parent           = win
 C(xBtn, 7)
 xBtn.MouseButton1Click:Connect(function() gui:Destroy() end)
 
--- Drag
 local _drag, _ds, _dp
 win.InputBegan:Connect(function(i)
     if i.UserInputType==Enum.UserInputType.MouseButton1 then _drag=true _ds=i.Position _dp=win.Position end
@@ -80,7 +72,6 @@ gui.InputEnded:Connect(function(i)
     if i.UserInputType==Enum.UserInputType.MouseButton1 then _drag=false end
 end)
 
--- Создать карточку
 local function makeCard(y, h)
     local f = Instance.new("Frame")
     f.Size             = UDim2.new(0, 388, 0, h)
@@ -93,7 +84,6 @@ local function makeCard(y, h)
     return f
 end
 
--- Подпись карточки
 local function makeLabel(parent, text, x, y, w, h, size, color, bold)
     local l = Instance.new("TextLabel")
     l.Size               = UDim2.new(0, w, 0, h)
@@ -108,7 +98,6 @@ local function makeLabel(parent, text, x, y, w, h, size, color, bold)
     return l
 end
 
--- ══ КАРТОЧКА 1: FLY SPEED (y=14) ═══════════════════════════════
 local c1 = makeCard(14, 76)
 makeLabel(c1, "Fly Speed", 12, 8, 200, 16, 13, GRAY)
 
@@ -134,7 +123,6 @@ sBox.FocusLost:Connect(function()
     sBox.Text = string.format("%.1f", FlySpeed)
 end)
 
--- ══ КАРТОЧКА 2: FLY KEYBOARD (y=102) ════════════════════════════
 local c2 = makeCard(102, 76)
 makeLabel(c2, "Fly Keyboard", 12, 8, 200, 16, 13, GRAY)
 
@@ -181,7 +169,6 @@ end)
 cBtn.MouseEnter:Connect(function() if not listeningForKey then tw(cBtn,{BackgroundColor3=ACCENT2}) end end)
 cBtn.MouseLeave:Connect(function() if not listeningForKey then tw(cBtn,{BackgroundColor3=ACCENT}) end end)
 
--- ══ КАРТОЧКА 3: NOCLIP (y=190) ══════════════════════════════════
 local c3 = makeCard(190, 76)
 makeLabel(c3, "NoClip", 12, 8, 200, 16, 13, GRAY)
 
@@ -232,7 +219,6 @@ tBtn.ZIndex             = 5
 tBtn.Parent             = track
 tBtn.MouseButton1Click:Connect(function() setNC(not NoClipOn) end)
 
--- ══ FLY ══════════════════════════════════════════════════════════
 local function startFly()
     FlyOn = true
     local cam = workspace.CurrentCamera
