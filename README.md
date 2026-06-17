@@ -1,3 +1,12 @@
+
+-- ╔══════════════════════════════════════════════════════════════════╗
+-- ║          KEEPER | MULTI-TOOL  —  v4.9  (Unlimited speed input) ║
+-- ║  • Speed input accepts any positive number (no 1-100 cap)      ║
+-- ║  • Slider works in 1-100 range for convenience                 ║
+-- ║  • All UI labels in English                                    ║
+-- ║  • Input shows exact value (e.g. 1000), slider at max          ║
+-- ╚══════════════════════════════════════════════════════════════════╝
+
 local Players          = game:GetService("Players")
 local TweenService     = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
@@ -7,6 +16,9 @@ local RunService       = game:GetService("RunService")
 local LocalPlayer = Players.LocalPlayer
 local PlayerGui   = LocalPlayer:WaitForChild("PlayerGui")
 
+-- ══════════════════════════════════════════
+-- CONFIG
+-- ══════════════════════════════════════════
 local CFG = {
     WIN_W         = 760,
     WIN_H         = 460,
@@ -16,7 +28,7 @@ local CFG = {
     BTN_PADX      = 8,
     BTN_PADY_TOP  = 6,
     SCROLL_BAR_W  = 5,
-    TOTAL_BTNS    = 1, -- only one button
+    TOTAL_BTNS    = 15,
     CORNER_WIN    = 0,
     CORNER_BTN    = 0,
     CORNER_PANEL  = 0,
@@ -31,6 +43,9 @@ local CFG = {
     CLOSE_Y_OFFSET = -1,
 }
 
+-- ══════════════════════════════════════════
+-- COLOR PALETTE
+-- ══════════════════════════════════════════
 local C = {
     WIN_BG        = Color3.fromRGB(10, 10, 16),
     WIN_STROKE    = Color3.fromRGB(55, 55, 75),
@@ -54,6 +69,9 @@ local C = {
     SCROLL_HOV    = Color3.fromRGB(120, 120, 170),
 }
 
+-- ══════════════════════════════════════════
+-- TWEEN HELPERS
+-- ══════════════════════════════════════════
 local function tw(obj, t, style, dir, props)
     local info = TweenInfo.new(t, style or Enum.EasingStyle.Quart, dir or Enum.EasingDirection.Out)
     local tween = TweenService:Create(obj, info, props)
@@ -66,6 +84,9 @@ local function twMed(obj, props)    return tw(obj, CFG.T_MED,   Enum.EasingStyle
 local function twUltra(obj, props)  return tw(obj, CFG.T_ULTRA, Enum.EasingStyle.Quad,  Enum.EasingDirection.Out, props) end
 local function twSpring(obj, props) return tw(obj, CFG.T_SPRING, Enum.EasingStyle.Elastic, Enum.EasingDirection.Out, props) end
 
+-- ══════════════════════════════════════════
+-- INSTANCE FACTORY
+-- ══════════════════════════════════════════
 local function New(class, props, children)
     local inst = Instance.new(class)
     for k, v in pairs(props or {}) do inst[k] = v end
@@ -82,17 +103,26 @@ local function Stroke(color, thick, transparency)
     })
 end
 
+-- ══════════════════════════════════════════
+-- SCROLL LOCK
+-- ══════════════════════════════════════════
 local SCROLL_BIND = "DisableScroll"
 ContextActionService:BindAction(SCROLL_BIND, function() return Enum.ContextActionResult.Sink end, false, Enum.UserInputType.MouseWheel)
 
+-- ══════════════════════════════════════════
+-- SCREENGUI
+-- ══════════════════════════════════════════
 local ScreenGui = New("ScreenGui", {
-    Name           = "MainUI",
+    Name           = "KeeperMultiTool",
     ResetOnSpawn   = false,
     ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
     IgnoreGuiInset = true,
     Parent         = PlayerGui,
 })
 
+-- ══════════════════════════════════════════
+-- MAIN WINDOW
+-- ══════════════════════════════════════════
 local Window = New("Frame", {
     Name             = "Window",
     AnchorPoint      = Vector2.new(0.5, 0.5),
@@ -115,6 +145,9 @@ local WinGlass = New("Frame", {
     Parent           = Window,
 })
 
+-- ══════════════════════════════════════════
+-- TITLE BAR
+-- ══════════════════════════════════════════
 local TitleBar = New("Frame", {
     Name                  = "TitleBar",
     Size                  = UDim2.new(1, 0, 0, 42),
@@ -143,7 +176,7 @@ local TitleLabel = New("TextLabel", {
     Size                  = UDim2.new(1, -60, 1, 0),
     BackgroundTransparency = 1,
     Font                  = Enum.Font.GothamMedium,
-    Text                  = "Control Panel",
+    Text                  = "keeper | multi-tool",
     TextColor3            = C.TITLE_TEXT,
     TextSize              = 13,
     TextXAlignment        = Enum.TextXAlignment.Left,
@@ -151,6 +184,9 @@ local TitleLabel = New("TextLabel", {
     Parent                = TitleBar,
 })
 
+-- ══════════════════════════════════════════
+-- CLOSE BUTTON
+-- ══════════════════════════════════════════
 local CloseBtnContainer = New("Frame", {
     Name             = "CloseBtnContainer",
     AnchorPoint      = Vector2.new(1, 0.5),
@@ -220,6 +256,9 @@ CloseBtn.MouseButton1Up:Connect(function()
     twFast(CloseBtnContainer, {Size = UDim2.new(0, 26, 0, 26), Position = UDim2.new(1, -14, 0.5, 0)})
 end)
 
+-- ══════════════════════════════════════════
+-- CLOSE / TOGGLE
+-- ══════════════════════════════════════════
 local isVisible = true
 
 local function doClose()
@@ -250,6 +289,9 @@ UserInputService.InputBegan:Connect(function(input, processed)
     if input.KeyCode == Enum.KeyCode.RightAlt then doToggle() end
 end)
 
+-- ══════════════════════════════════════════
+-- CONTENT AREA
+-- ══════════════════════════════════════════
 local ContentArea = New("Frame", {
     Name                  = "ContentArea",
     Position              = UDim2.new(0, 12, 0, 46),
@@ -259,6 +301,9 @@ local ContentArea = New("Frame", {
     Parent                = Window,
 })
 
+-- ══════════════════════════════════════════
+-- SIDEBAR
+-- ══════════════════════════════════════════
 local SidebarContainer = New("Frame", {
     Name             = "SidebarContainer",
     Position         = UDim2.new(0, 0, 0, 0),
@@ -273,6 +318,9 @@ local SidebarContainer = New("Frame", {
 local SidebarStroke = Stroke(C.PANEL_STROKE, 1, 0.5)
 SidebarStroke.Parent = SidebarContainer
 
+-- ══════════════════════════════════════════
+-- SCROLL CONTAINER
+-- ══════════════════════════════════════════
 local ScrollClip = New("Frame", {
     Name             = "ScrollClip",
     Position         = UDim2.new(0, CFG.BTN_PADX, 0, CFG.BTN_PADY_TOP),
@@ -293,6 +341,9 @@ local ScrollHolder = New("Frame", {
     Parent           = ScrollClip,
 })
 
+-- ══════════════════════════════════════════
+-- SCROLLBAR
+-- ══════════════════════════════════════════
 local ScrollTrack = New("Frame", {
     Name             = "ScrollTrack",
     AnchorPoint      = Vector2.new(1, 0),
@@ -316,6 +367,9 @@ local ScrollThumb = New("Frame", {
     Parent           = ScrollTrack,
 })
 
+-- ══════════════════════════════════════════
+-- SCROLL STATE
+-- ══════════════════════════════════════════
 local scrollOffset    = 0
 local scrollMaxOffset = 0
 local isScrollDragging = false
@@ -389,6 +443,9 @@ ScrollThumb.MouseLeave:Connect(function()
     if not isScrollDragging then twFast(ScrollThumb, {BackgroundColor3 = C.SCROLL_THUMB}) end
 end)
 
+-- ══════════════════════════════════════════
+-- MAIN PANEL
+-- ══════════════════════════════════════════
 local PanelX = CFG.SIDEBAR_W + 12
 local MainPanel = New("Frame", {
     Name             = "MainPanel",
@@ -429,64 +486,70 @@ local DynamicContainer = New("Frame", {
     Parent           = MainPanel,
 })
 
-local Module = {}
-Module.active = false
-Module.value = 50
-Module.hotkey = Enum.KeyCode.LeftAlt
-Module.hotkeyName = "LeftAlt"
-Module.ui = {}
-Module.waitingForKey = false
+-- ══════════════════════════════════════════
+-- FLY SYSTEM (UNLIMITED INPUT + ENGLISH UI)
+-- ══════════════════════════════════════════
+local FlySystem = {}
+FlySystem.flying = false
+FlySystem.speed = 50
+FlySystem.hotkey = Enum.KeyCode.LeftAlt
+FlySystem.hotkeyName = "LeftAlt"
+FlySystem.ui = {}
+FlySystem.waitingForKey = false
 local mouseConnections = {}
 
-function Module.createPanel(parent)
+function FlySystem.createPanel(parent)
     for _, child in ipairs(parent:GetChildren()) do child:Destroy() end
     for _, conn in ipairs(mouseConnections) do if conn then conn:Disconnect() end end
     mouseConnections = {}
-        
+
+    local function buildUI()
+        -- Title
         local title = Instance.new("TextLabel")
         title.Size = UDim2.new(1, -20, 0, 30)
         title.Position = UDim2.new(0, 10, 0, 10)
         title.BackgroundTransparency = 1
         title.Font = Enum.Font.GothamBold
-        title.Text = "Module Settings"
+        title.Text = "Fly Settings"
         title.TextColor3 = Color3.fromRGB(200, 200, 220)
         title.TextSize = 18
         title.TextXAlignment = Enum.TextXAlignment.Left
         title.Parent = parent
 
-        local valueLabel = Instance.new("TextLabel")
-        valueLabel.Size = UDim2.new(0.5, 0, 0, 20)
-        valueLabel.Position = UDim2.new(0, 10, 0, 50)
-        valueLabel.BackgroundTransparency = 1
-        valueLabel.Font = Enum.Font.Gotham
-        valueLabel.Text = "Parameter"
-        valueLabel.TextColor3 = Color3.fromRGB(160, 160, 180)
-        valueLabel.TextSize = 13
-        valueLabel.TextXAlignment = Enum.TextXAlignment.Left
-        valueLabel.Parent = parent
+        local speedLabel = Instance.new("TextLabel")
+        speedLabel.Size = UDim2.new(0.5, 0, 0, 20)
+        speedLabel.Position = UDim2.new(0, 10, 0, 50)
+        speedLabel.BackgroundTransparency = 1
+        speedLabel.Font = Enum.Font.Gotham
+        speedLabel.Text = "Fly Speed"
+        speedLabel.TextColor3 = Color3.fromRGB(160, 160, 180)
+        speedLabel.TextSize = 13
+        speedLabel.TextXAlignment = Enum.TextXAlignment.Left
+        speedLabel.Parent = parent
 
-        local valueBox = Instance.new("TextBox")
-        valueBox.Size = UDim2.new(0.15, 0, 0, 24)
-        valueBox.Position = UDim2.new(0.72, 0, 0, 48)
-        valueBox.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-        valueBox.BorderSizePixel = 0
-        valueBox.Font = Enum.Font.Gotham
-        valueBox.Text = tostring(Module.value)
-        valueBox.TextColor3 = Color3.fromRGB(220, 220, 240)
-        valueBox.TextSize = 14
-        valueBox.TextXAlignment = Enum.TextXAlignment.Center
-        valueBox.ClearTextOnFocus = false
-        valueBox.Parent = parent
+        local speedBox = Instance.new("TextBox")
+        speedBox.Size = UDim2.new(0.15, 0, 0, 24)
+        speedBox.Position = UDim2.new(0.72, 0, 0, 48)
+        speedBox.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
+        speedBox.BorderSizePixel = 0
+        speedBox.Font = Enum.Font.Gotham
+        speedBox.Text = tostring(FlySystem.speed)
+        speedBox.TextColor3 = Color3.fromRGB(220, 220, 240)
+        speedBox.TextSize = 14
+        speedBox.TextXAlignment = Enum.TextXAlignment.Center
+        speedBox.ClearTextOnFocus = false
+        speedBox.Parent = parent
         local boxStroke = Instance.new("UIStroke")
         boxStroke.Color = Color3.fromRGB(255,255,255)
         boxStroke.Thickness = 0.5
         boxStroke.Transparency = 0.4
-        boxStroke.Parent = valueBox
+        boxStroke.Parent = speedBox
 
-        valueBox.Focused:Connect(function()
-            valueBox.Text = ""
-            if Module.ui.updateSlider then
-                Module.ui.updateSlider(1)
+        -- Clear text & reset slider to minimum when focused
+        speedBox.Focused:Connect(function()
+            speedBox.Text = ""
+            if FlySystem.ui.updateSlider then
+                FlySystem.ui.updateSlider(1)   -- minimum = 1
             end
         end)
 
@@ -536,7 +599,7 @@ function Module.createPanel(parent)
         hotkeyLabel.Position = UDim2.new(0, 10, 0, 125)
         hotkeyLabel.BackgroundTransparency = 1
         hotkeyLabel.Font = Enum.Font.Gotham
-        hotkeyLabel.Text = "Binding"
+        hotkeyLabel.Text = "Hotkey"
         hotkeyLabel.TextColor3 = Color3.fromRGB(160, 160, 180)
         hotkeyLabel.TextSize = 13
         hotkeyLabel.TextXAlignment = Enum.TextXAlignment.Left
@@ -548,7 +611,7 @@ function Module.createPanel(parent)
         hotkeyBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
         hotkeyBtn.BorderSizePixel = 0
         hotkeyBtn.Font = Enum.Font.Gotham
-        hotkeyBtn.Text = Module.hotkeyName
+        hotkeyBtn.Text = FlySystem.hotkeyName
         hotkeyBtn.TextColor3 = Color3.fromRGB(220, 220, 240)
         hotkeyBtn.TextSize = 13
         hotkeyBtn.Parent = parent
@@ -561,8 +624,8 @@ function Module.createPanel(parent)
         local toggleBtn = Instance.new("TextButton")
         toggleBtn.Size = UDim2.new(0.4, 0, 0, 30)
         toggleBtn.Position = UDim2.new(0.3, 0, 0, 160)
-        toggleBtn.BackgroundColor3 = Module.active and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(150, 50, 50)
-        toggleBtn.Text = Module.active and "Enabled" or "Disabled"
+        toggleBtn.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(150, 50, 50)
+        toggleBtn.Text = FlySystem.flying and "Fly: ON" or "Fly: OFF"
         toggleBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
         toggleBtn.TextSize = 14
         toggleBtn.BorderSizePixel = 0
@@ -573,17 +636,19 @@ function Module.createPanel(parent)
         togStroke.Transparency = 0.3
         togStroke.Parent = toggleBtn
 
-        Module.ui.track = track
-        Module.ui.thumb = thumb
-        Module.ui.valueBox = valueBox
-        Module.ui.hotkeyBtn = hotkeyBtn
-        Module.ui.toggleBtn = toggleBtn
-        Module.ui.toggleStroke = togStroke
-        Module.ui.panel = parent
+        -- Store references
+        FlySystem.ui.track = track
+        FlySystem.ui.thumb = thumb
+        FlySystem.ui.speedBox = speedBox
+        FlySystem.ui.hotkeyBtn = hotkeyBtn
+        FlySystem.ui.toggleBtn = toggleBtn
+        FlySystem.ui.toggleStroke = togStroke
+        FlySystem.ui.panel = parent
 
-        local function updateSlider(val)
-            local minVal = 1; local maxVal = 100
-            local ratio = math.clamp((val - minVal) / (maxVal - minVal), 0, 1)
+        -- Function to update slider AND text (used normally)
+        local function updateSlider(speed)
+            local minSpeed = 1; local maxSpeed = 100
+            local ratio = math.clamp((speed - minSpeed) / (maxSpeed - minSpeed), 0, 1)
             local trackWidth = track.AbsoluteSize.X
             if trackWidth > 0 then
                 thumb.Position = UDim2.new(0, ratio * (trackWidth - 14), 0.5, -7)
@@ -592,13 +657,14 @@ function Module.createPanel(parent)
                 trackWidth = track.AbsoluteSize.X
                 if trackWidth > 0 then thumb.Position = UDim2.new(0, ratio * (trackWidth - 14), 0.5, -7) end
             end
-            valueBox.Text = tostring(math.round(val))
+            speedBox.Text = tostring(math.round(speed))
         end
-        Module.ui.updateSlider = updateSlider
+        FlySystem.ui.updateSlider = updateSlider
 
-        local function setSliderPosition(val)
-            local minVal = 1; local maxVal = 100
-            local ratio = math.clamp((val - minVal) / (maxVal - minVal), 0, 1)
+        -- Function to move slider WITHOUT changing text (for out-of-range input)
+        local function setSliderPosition(speed)
+            local minSpeed = 1; local maxSpeed = 100
+            local ratio = math.clamp((speed - minSpeed) / (maxSpeed - minSpeed), 0, 1)
             local trackWidth = track.AbsoluteSize.X
             if trackWidth > 0 then
                 thumb.Position = UDim2.new(0, ratio * (trackWidth - 14), 0.5, -7)
@@ -607,11 +673,14 @@ function Module.createPanel(parent)
                 trackWidth = track.AbsoluteSize.X
                 if trackWidth > 0 then thumb.Position = UDim2.new(0, ratio * (trackWidth - 14), 0.5, -7) end
             end
+            -- do NOT change speedBox.Text
         end
-        Module.ui.setSliderPosition = setSliderPosition
+        FlySystem.ui.setSliderPosition = setSliderPosition
 
-        updateSlider(Module.value)
+        -- Initialize slider and text
+        updateSlider(FlySystem.speed)
 
+        -- Slider dragging
         local dragging = false
         local dragStartX, dragStartPos
         thumb.InputBegan:Connect(function(input)
@@ -630,9 +699,10 @@ function Module.createPanel(parent)
                 local newPos = math.clamp(dragStartPos + delta, 0, trackWidth - 14)
                 thumb.Position = UDim2.new(0, newPos, 0.5, -7)
                 local ratio = newPos / (trackWidth - 14)
-                local val = math.round(1 + ratio * 99)
-                Module.value = val
-                valueBox.Text = tostring(val)
+                local speed = math.round(1 + ratio * 99)
+                FlySystem.speed = speed
+                speedBox.Text = tostring(speed)
+                print("[FLY] Speed changed to:", speed)
             end
         end)
         table.insert(mouseConnections, mouseConn)
@@ -644,109 +714,122 @@ function Module.createPanel(parent)
         end)
         table.insert(mouseConnections, mouseEndConn)
 
-        valueBox.FocusLost:Connect(function(enterPressed)
-            local val = tonumber(valueBox.Text)
+        -- Speed input – UNLIMITED (no 1-100 cap) + keeps displayed value
+        speedBox.FocusLost:Connect(function(enterPressed)
+            local val = tonumber(speedBox.Text)
             if val and val > 0 then
-                Module.value = val
+                FlySystem.speed = val
+                -- Update slider position (without changing text)
                 if val >= 1 and val <= 100 then
-                    updateSlider(val)
+                    updateSlider(val)   -- updates both slider and text (but we'll override text next)
                 elseif val > 100 then
                     setSliderPosition(100)
                 elseif val < 1 then
                     setSliderPosition(1)
                 end
-                valueBox.Text = tostring(val)
+                -- Always set the text to the entered value (preserves 1000, etc.)
+                speedBox.Text = tostring(val)
+                print("[FLY] Speed set via input (unlimited):", val)
             else
-                valueBox.Text = tostring(Module.value)
+                speedBox.Text = tostring(FlySystem.speed)
             end
         end)
 
+        -- Hotkey binding
         hotkeyBtn.MouseButton1Click:Connect(function()
-            if Module.waitingForKey then return end
-            Module.waitingForKey = true
+            if FlySystem.waitingForKey then return end
+            FlySystem.waitingForKey = true
             hotkeyBtn.Text = "Press any key..."
             hotkeyBtn.BackgroundColor3 = Color3.fromRGB(80, 50, 50)
 
             local conn
             conn = UserInputService.InputBegan:Connect(function(input, processed)
-                if not Module.waitingForKey then
+                if not FlySystem.waitingForKey then
                     if conn then conn:Disconnect() end
                     return
                 end
                 if input.UserInputType == Enum.UserInputType.Keyboard then
                     local key = input.KeyCode
                     if key then
-                        Module.hotkey = key
-                        Module.hotkeyName = tostring(key):gsub("Enum.KeyCode.", "")
-                        hotkeyBtn.Text = Module.hotkeyName
+                        FlySystem.hotkey = key
+                        FlySystem.hotkeyName = tostring(key):gsub("Enum.KeyCode.", "")
+                        hotkeyBtn.Text = FlySystem.hotkeyName
                         hotkeyBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
-                        Module.waitingForKey = false
+                        FlySystem.waitingForKey = false
+                        print("[FLY] Hotkey bound to:", FlySystem.hotkeyName)
                         if conn then conn:Disconnect() end
                     end
                 end
             end)
 
             task.delay(10, function()
-                if Module.waitingForKey then
-                    Module.waitingForKey = false
-                    hotkeyBtn.Text = Module.hotkeyName
+                if FlySystem.waitingForKey then
+                    FlySystem.waitingForKey = false
+                    hotkeyBtn.Text = FlySystem.hotkeyName
                     hotkeyBtn.BackgroundColor3 = Color3.fromRGB(40, 40, 55)
                     if conn then conn:Disconnect() end
                 end
             end)
         end)
 
+        -- Toggle button
         toggleBtn.MouseButton1Click:Connect(function()
-            Module.toggle()
+            print("[FLY] Toggle button clicked")
+            FlySystem.toggleFly()
         end)
+
+        print("Fly panel built successfully")
     end
 
     buildUI()
 end
 
-function Module.toggle()
-    Module.active = not Module.active
-    Module.updateUI()
+function FlySystem.toggleFly()
+    FlySystem.flying = not FlySystem.flying
+    FlySystem.updateUI()
+    print("[FLY] Toggled to:", FlySystem.flying)
 end
 
-function Module.updateUI()
-    if Module.ui.toggleBtn then
-        Module.ui.toggleBtn.BackgroundColor3 = Module.active and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(150, 50, 50)
-        Module.ui.toggleBtn.Text = Module.active and "Enabled" or "Disabled"
+function FlySystem.updateUI()
+    if FlySystem.ui.toggleBtn then
+        FlySystem.ui.toggleBtn.BackgroundColor3 = FlySystem.flying and Color3.fromRGB(50, 150, 50) or Color3.fromRGB(150, 50, 50)
+        FlySystem.ui.toggleBtn.Text = FlySystem.flying and "Fly: ON" or "Fly: OFF"
     end
 end
 
-Module.createPanel(DynamicContainer)
+-- Create panel (hidden)
+FlySystem.createPanel(DynamicContainer)
 DynamicContainer.Visible = false
 
-local renderConn = RunService.RenderStepped:Connect(function()
+-- Fly physics
+local flyRenderConn = RunService.RenderStepped:Connect(function()
     local char = LocalPlayer.Character
     if not char then return end
-    local root = char:FindFirstChild("HumanoidRootPart")
+    local hrp = char:FindFirstChild("HumanoidRootPart")
     local hum = char:FindFirstChild("Humanoid")
-    if not root or not hum then return end
+    if not hrp or not hum then return end
 
-    local lv = root:FindFirstChild("LinearVelocity")
-    local align = root:FindFirstChild("AlignOrientation")
-    local att = root:FindFirstChild("Attachment")
+    local lv = hrp:FindFirstChild("FlyLinearVelocity")
+    local align = hrp:FindFirstChild("FlyAlignOrientation")
+    local att = hrp:FindFirstChild("FlyAttachment")
 
-    if Module.active then
+    if FlySystem.flying then
         if not lv then
             att = Instance.new("Attachment")
-            att.Name = "Attachment"
-            att.Parent = root
+            att.Name = "FlyAttachment"
+            att.Parent = hrp
             lv = Instance.new("LinearVelocity")
-            lv.Name = "LinearVelocity"
+            lv.Name = "FlyLinearVelocity"
             lv.MaxForce = 100000
             lv.VectorVelocity = Vector3.new(0,0,0)
             lv.Attachment0 = att
-            lv.Parent = root
+            lv.Parent = hrp
             align = Instance.new("AlignOrientation")
-            align.Name = "AlignOrientation"
+            align.Name = "FlyAlignOrientation"
             align.MaxTorque = 100000
             align.Attachment0 = att
             align.Mode = Enum.OrientationAlignmentMode.OneAttachment
-            align.Parent = root
+            align.Parent = hrp
         end
 
         hum.PlatformStand = true
@@ -759,7 +842,7 @@ local renderConn = RunService.RenderStepped:Connect(function()
             if UserInputService:IsKeyDown(Enum.KeyCode.D) then dir += cam.CFrame.RightVector end
             if UserInputService:IsKeyDown(Enum.KeyCode.Space) then dir += Vector3.new(0,1,0) end
             if UserInputService:IsKeyDown(Enum.KeyCode.LeftControl) then dir += Vector3.new(0,-1,0) end
-            lv.VectorVelocity = dir * Module.value
+            lv.VectorVelocity = dir * FlySystem.speed
             align.CFrame = cam.CFrame
         end
     else
@@ -770,17 +853,26 @@ local renderConn = RunService.RenderStepped:Connect(function()
     end
 end)
 
+-- Global hotkey
 UserInputService.InputBegan:Connect(function(input, processed)
     if processed then return end
     if input.UserInputType == Enum.UserInputType.Keyboard then
-        if Module.waitingForKey then return end
-        if input.KeyCode == Module.hotkey then
-            Module.toggle()
+        if FlySystem.waitingForKey then return end
+        if input.KeyCode == FlySystem.hotkey then
+            FlySystem.toggleFly()
         end
     end
 end)
 
-local LABELS = { "Main" }
+-- ══════════════════════════════════════════
+-- BUTTONS
+-- ══════════════════════════════════════════
+local LABELS = {
+    "Main ",
+    "Fly ",
+    "NoClip ",
+    "", "", "", "", "", "", "", "", "", "", "", ""
+}
 
 local buttons   = {}
 local activeBtn = nil
@@ -848,12 +940,21 @@ for i = 1, CFG.TOTAL_BTNS do
         twFast(BtnStroke, {Color = C.BTN_STR_ACT, Thickness = 1.0, Transparency = 0.05})
         twFast(Btn, {TextColor3 = C.BTN_TEXT_ACT})
 
-        
-        PanelContent.Visible = false
-        DynamicContainer.Visible = true
-        Module.updateUI()
-        if Module.ui.updateSlider then
-            Module.ui.updateSlider(Module.value)
+        if i == 2 then  -- Fly button
+            PanelContent.Visible = false
+            DynamicContainer.Visible = true
+            FlySystem.updateUI()
+            if FlySystem.ui.updateSlider then
+                FlySystem.ui.updateSlider(FlySystem.speed)
+            end
+        else
+            PanelContent.Visible = true
+            DynamicContainer.Visible = false
+            twUltra(PanelContent, {TextTransparency = 1})
+            task.delay(0.09, function()
+                PanelContent.Text = ""
+                twMed(PanelContent, {TextTransparency = 0})
+            end)
         end
     end)
 
@@ -865,6 +966,9 @@ task.defer(function()
     applyScroll(0, false)
 end)
 
+-- ══════════════════════════════════════════
+-- OPEN ANIMATION
+-- ══════════════════════════════════════════
 Window.Size = UDim2.new(0, CFG.WIN_W * 0.86, 0, CFG.WIN_H * 0.86)
 Window.BackgroundTransparency = 0.95
 twSpring(Window, {Size = UDim2.new(0, CFG.WIN_W, 0, CFG.WIN_H), BackgroundTransparency = 0})
@@ -878,3 +982,5 @@ for i, btn in ipairs(buttons) do
         end
     end)
 end
+
+print("Keeper Multi-Tool v4.9 loaded — Unlimited speed input, English UI, exact value display.")
